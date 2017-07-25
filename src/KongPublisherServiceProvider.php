@@ -3,6 +3,7 @@ namespace KWRI\Kong\RoutePublisher;
 
 use Illuminate\Support\ServiceProvider;
 use GuzzleHttp\Client as GuzzleClient;
+use KWRI\Kong\RoutePublisher\Console\RoutePublishCommand;
 
 class KongPublisherServiceProvider extends ServiceProvider
 {
@@ -13,6 +14,12 @@ class KongPublisherServiceProvider extends ServiceProvider
             $client = new GuzzleClient(['base_uri' => $hosts]);
             return new KongClient($client);
         });
+
+        $this->app->singleton('kong.route-publisher', RoutePublishCommand::class);
+
+        $this->commands(
+          'kong.route-publisher'
+        );
 
     }
 }
