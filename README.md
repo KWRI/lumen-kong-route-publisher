@@ -18,7 +18,7 @@ Arguments:
 - `contacts` is your name of microservices
 - `--upstream-host` value is hostname where your microservice server life
 - `--remove-uri-prefix` is prefix to be removed
-- `--with-request-transformer` Run publisher with request transformer. If you have dynamic path you need to call use this argument
+- `--with-request-transformer` Run publisher with request transformer. If you have dynamic path as path parameter that need to call, You must use this argument (currently only support numerical value of path parameter).
 
 Env used:
 - `KONG_ADMIN_HOST` value is your kong admin host. for example:
