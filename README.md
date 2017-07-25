@@ -10,7 +10,7 @@
 ## Run
 Run this on your console:
 ```
-$ php artisan kong:publish-route contacts --upstream-host=http://mockbin.com/request --remove-uri-prefix=api/v1  --with-request-transformer
+$ KONG_ADMIN_HOST=yourkong-admin-host php artisan kong:publish-route contacts --upstream-host=http://mockbin.com/request --remove-uri-prefix=api/v1  --with-request-transformer
 ```
 
 Arguments:
@@ -20,6 +20,11 @@ Arguments:
 - `--remove-uri-prefix` is prefix to be removed
 - `--with-request-transformer` Run publisher with request transformer. If you have dynamic path you need to call use this argument
 
+Env used:
+- `KONG_ADMIN_HOST` value is your kong admin host. for example:
+http://localhost:8001
+
+You can alternatively put KONG_ADMIN_HOST in your lumen project .env file instead of set it when calling publish-route command
 
 convention in contacts is:
 /api/v1/contacts
