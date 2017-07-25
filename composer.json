@@ -1,0 +1,24 @@
+{
+    "name": "kwri/lumen-kong-route-publisher",
+    "description": "Lumen kong route publisher",
+    "type": "library",
+    "license": "GPL-3.0",
+    "require": {
+        "php": "^5.4|^7.0",
+        "guzzlehttp/guzzle": "~5.3|~6.0",
+        "illuminate/console": "5.4.*",
+        "illuminate/filesystem": "5.4.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "KWRI\\Kong\\RoutePublisher\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Nurcahyo al Hidayah",
+            "email": "2light.hidayah@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
