@@ -15,7 +15,7 @@ class RoutePublishCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'kong:publish-route {urlPrefix} {--upstream-host=} '
+    protected $signature = 'kong:publish-route {appName} {--upstream-host=} '
         . '{--remove-uri-prefix=} {--with-request-transformer}';
     /**
      * The console command description.
@@ -23,12 +23,6 @@ class RoutePublishCommand extends Command
      * @var string
      */
     protected $description = 'Publish all registered routes to Kong.';
-
-    public function __construct(KongPublisher $publisher)
-    {
-        parent::__construct();
-        $this->publisher = $publisher;
-    }
 
 
     /**
@@ -39,12 +33,13 @@ class RoutePublishCommand extends Command
     public function fire()
     {
         $app = $this->laravel;
-        $urlPrefix = $this->normalizeUrlPrefix($this->argument('urlPrefix'));
+        $this->publisher = $app->make(KongPublisher::class);
+        $appName = $this->normalizeUrlPrefix($this->argument('appName'));
         $removeUriPrefix = $this->normalizeUrlPrefix($this->option('remove-uri-prefix'));
         $routeCollection = new Collection($app->getRoutes());
-        $rows = $routeCollection->map(function($route) use ($app, $urlPrefix, $removeUriPrefix){
+        $rows = $routeCollection->map(function($route) use ($app, $appName, $removeUriPrefix){
             $uri = $route['uri'] == '/' ? '/api-info' : $route['uri'];
-            $uri = $this->toPrefixedUrls($urlPrefix, $uri, $removeUriPrefix);
+            $uri = $this->toPrefixedUrls($appName, $uri, $removeUriPrefix);
 
             $row = [
                 'uris' => $uri,
@@ -85,13 +80,13 @@ class RoutePublishCommand extends Command
         return $url;
     }
 
-    private function normalizeUrlPrefix($urlPrefix)
+    private function normalizeUrlPrefix($appName)
     {
-        if ($urlPrefix{0} == '/') {
-            return $urlPrefix;
+        if ($appName{0} == '/') {
+            return $appName;
         }
 
-        return '/'.$urlPrefix;
+        return '/'.$appName;
     }
     /**
      * @param array $action
@@ -100,9 +95,8 @@ class RoutePublishCommand extends Command
     private function getRouteNameForRow(array $row)
     {
         $name = Str::lower(sprintf('%s%s',$row['methods'], $row['uris']));
-        $name = str_replace('/', '.', $name);
-
-        return $name;
+        $name = str_replace(['/', '{', '}'], ['.', '', ''], $name);
+        return $this->argument('appName').'.'.$name;
     }
 
     private function getUpstreamUrl($route)
