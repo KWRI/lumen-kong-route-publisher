@@ -20,7 +20,10 @@ class KongClient
 
         public function updateOrAddApi(array $payload)
         {
-            $this->client->delete('/apis/'.$payload['name']);
+            try {
+                $this->client->delete('/apis/'.$payload['name']);
+            } catch (\Exception $e) {}
+
             return $this->client->put('/apis/', [
                 'json' => $payload
             ]);

@@ -21,12 +21,16 @@ class KongPublisher
     {
 
         $results = $payloads->map(function ($payload) {
-            $this->beforePublish($payload);
             try {
-                $response = $this->client->updateOrAddApi($payload->toArray());
+                $this->beforePublish($payload);
+                $data = $payload->toArray();
+                $response = $this->client->updateOrAddApi($data);
                 $this->afterPublish($response, $payload);
                 return $payload;
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+                $payload->offsetSet('error', $e->getMessage());
+                return $payload;
+            }
          });
 
         return $results;
@@ -42,6 +46,10 @@ class KongPublisher
 
     public function afterPublish($response, $payload)
     {
+        if (empty($response)) {
+            return;
+        }
+
         if (!($response->getStatusCode() === 201 || $response->getStatusCode() === 200)) {
             return;
         }
