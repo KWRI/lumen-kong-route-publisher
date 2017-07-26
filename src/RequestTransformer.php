@@ -14,14 +14,37 @@ class RequestTransformer implements BehaviorInterface
         return $payload;
     }
 
+    private function normalizePathParams($uri)
+    {
+        $matches = [];
+        preg_match_all('#\{(\w+)\}#', $uri, $matches);
+        if (!count($matches)) {
+            return $uri;
+        }
+
+        $dynamicPathParams = last($matches);
+        $search = [];
+        $replacement = [];
+        foreach ($dynamicPathParams as $pathParam) {
+            $search[] = '{'. $pathParam. '}';
+            $replacement[] = Str::contains($pathParam, 'id')
+                ? '(?<'. $pathParam. '>\d+)'
+                : '(?<'. $pathParam. '>\w+)';
+        }
+
+        return str_replace($search, $replacement, $uri);
+    }
+
     public function mutateUris(Collection $payload)
     {
+
+
         $uri = $payload->offsetGet('uris');
-        $uri = str_replace(['{', '}'], ['(?<', '>\d+)'], $uri);
-        if (Str::contains($uri, '>\d+)')) {
-                $find = substr($uri, strpos($uri, '>\d+)' ));
-                if ($find == '>\d+)') {
-                    $uri = Str::replaceLast($find, '>\d+$)', $uri);
+        $uri = $this->normalizePathParams($uri);
+        if (Str::contains($uri, '+)')) {
+                $find = substr($uri, strlen($uri) - strlen('+)'));
+                if ($find == '+)') {
+                    $uri = Str::replaceLast($find, '+$)', $uri);
                 }
         }
 
