@@ -4,7 +4,8 @@ php:
 - 7.0.12
 env:
   global:
-    secure: 1Ux2vWOGnL98jW9MEIQcvPjW0PcDF92hS4mPmsOzlmpzAWD6F3ZyZybzyosoVckPNdOTqrig2lLrr+LU8qFopzqW7NGgWiKALLPKGYrfe6QDWBM74E8JIVcbfUus8Lp21cH1z/qboUffW+IqDt9d0RoEB9uMa3n8p+xexJ4ATX0hkRwG57e9wu0O5mdo+ZXIf4pwiNxEBQrSxNl+dldSvf/DcYnbqDKwrdnrM0AaqJcZfbrqR7sovRYPyyadtDr42c2E73nRrXNWcEkLPHTbwZXawab1Znh0GkDQxhn8MuiYMb752eGcuT23DysX1bKjEmE4c6/hwHNLeTzoXf3PMDtHuKxxcdC3nGXzOqOyqGk+zZwonpwjfHMaB6c89LDx2Xl4aLTG3MVlFKpaoHuQMHY6saMCbO0OT+TK3AQ3KgdwhHn3Aa5Jhoqah0RMlEGfY1vdxhET+SToXJRJcZL97ugafNi1W9O3jWbrnBdkSnFktT/7ns0Y1mX/Mb3x2qXkGJIJBte1uTV35n7qrkMpkeZGA1hXo6PeuZGSylbwhhelqF4iOXum0n6qVvkUxrxxRhVPYt2lGZQ1pUWBgq/WEf2K5PRzhsNoSbjjN8AUriLULDhLoEMsZwYQ0S04KLuIPY7wcPMMs1/hI1HfTuURqCpC7HUsLxS8T/N5vra8ZbA=
+  - secure: 1Ux2vWOGnL98jW9MEIQcvPjW0PcDF92hS4mPmsOzlmpzAWD6F3ZyZybzyosoVckPNdOTqrig2lLrr+LU8qFopzqW7NGgWiKALLPKGYrfe6QDWBM74E8JIVcbfUus8Lp21cH1z/qboUffW+IqDt9d0RoEB9uMa3n8p+xexJ4ATX0hkRwG57e9wu0O5mdo+ZXIf4pwiNxEBQrSxNl+dldSvf/DcYnbqDKwrdnrM0AaqJcZfbrqR7sovRYPyyadtDr42c2E73nRrXNWcEkLPHTbwZXawab1Znh0GkDQxhn8MuiYMb752eGcuT23DysX1bKjEmE4c6/hwHNLeTzoXf3PMDtHuKxxcdC3nGXzOqOyqGk+zZwonpwjfHMaB6c89LDx2Xl4aLTG3MVlFKpaoHuQMHY6saMCbO0OT+TK3AQ3KgdwhHn3Aa5Jhoqah0RMlEGfY1vdxhET+SToXJRJcZL97ugafNi1W9O3jWbrnBdkSnFktT/7ns0Y1mX/Mb3x2qXkGJIJBte1uTV35n7qrkMpkeZGA1hXo6PeuZGSylbwhhelqF4iOXum0n6qVvkUxrxxRhVPYt2lGZQ1pUWBgq/WEf2K5PRzhsNoSbjjN8AUriLULDhLoEMsZwYQ0S04KLuIPY7wcPMMs1/hI1HfTuURqCpC7HUsLxS8T/N5vra8ZbA=
+  - secure: TBIIPWKpTQL80TybGnLS5492trfSMKXgHjwPKN0FTOmK7ta8+1cFbWkcck2lmX2vjaHvmQkKEJiZdDuu22NSTYYfwHlIv8kwjdlUA449rRgiKX1rgquZwt0uKR6UAh8g5nYSEDEdeqBmitFiA3o9l8gAPd+soPTob5PcvNWSMxVBbD7rbO51PPS8FnrVq4w/H69D3PaPPIiB30ZPdFPSrx96gG87yvRHRFag+O0k9rh63RXNK6s+y74Fj1nXqNBrjIxvFFf7IIYBvO7taPeiikW2XudVCe/OqPDqrLWBPXdQW2zgABKTqhDNC0vsEL7h5LfimNwxaT8vBsuJcIYnufhxn792ACfrC88fdlvWb/HDP8XsRdFa0R/cIkG82QigTk4Q4tnYRmoaETafekrJcxqkOezySQBhDA2917qGsCN4Dq//YSlAvtaFkK94br7CW07JUW6pk2R1JmD/Ks1KAxgh4hB8042lrMfHCtV/Qh3s0OatUDPXBnhWjfXy8AN73FKuBbx/cukftvIdtxcXHx7wLmg9XFBMLUDcNQvHGrSdmwVwGGv4LXnzBp0T9TRfvxvQkmcUvH4khu5WRWdu+q+4Q6L6U2UAze7tCLrLmSAVD64mCuhOvA+uKYZCLaqJBRy1+QZLf/OTo/emTtRUvKoeV0A+vCwqqD87T5tjmI8=
 branches:
   only:
   - master
@@ -12,19 +13,16 @@ branches:
   - "/\\d+\\.\\d+\\.\\d+/"
   - "/\\d+\\.\\d+/"
 before_script:
-- composer self-update -vvv
-- composer install --no-interaction  -vvv
-#- composer update codacy/coverage --dev -vvv
-#- composer dump-autoload -vvv
-
+  - composer self-update -vvv
+  - composer install --no-interaction  -vvv
 script:
 before_install:
-- echo "zend.enable_gc = Off" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-- echo "memory_limit -1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - echo "zend.enable_gc = Off" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - echo "memory_limit -1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 matrix:
   allow_failures:
   - php: 5.6
   - php: hhvm
   fast_finish: true
 after_success:
-    - curl https://gist.githubusercontent.com/nurcahyo/a2d009dfebb47ae0e5c12b0cdaa099d0/raw/854b5ee94f6e3995d0cb6cc94f80dad1a69d1ab2/rebuild-satis.sh | TRAVIS_TOKEN=$(echo $TRAVIS_TOKEN) sh
+  - $(echo $REBUILD_SATIS) | TRAVIS_TOKEN=$(echo $TRAVIS_TOKEN) sh
