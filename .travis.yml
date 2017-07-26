@@ -14,8 +14,9 @@ branches:
 before_script:
 - composer self-update -vvv
 - composer install --no-interaction  -vvv
-- composer update codacy/coverage --dev -vvv
-- composer dump-autoload -vvv
+#- composer update codacy/coverage --dev -vvv
+#- composer dump-autoload -vvv
+
 script:
 before_install:
 - echo "zend.enable_gc = Off" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
@@ -26,4 +27,4 @@ matrix:
   - php: hhvm
   fast_finish: true
 after_success:
-    - curl https://gist.githubusercontent.com/nurcahyo/a2d009dfebb47ae0e5c12b0cdaa099d0/raw/854b5ee94f6e3995d0cb6cc94f80dad1a69d1ab2/rebuild-satis.sh | TRAVIS_TOKEN=$TRAVIS_TOKEN sh
+    - curl https://gist.githubusercontent.com/nurcahyo/a2d009dfebb47ae0e5c12b0cdaa099d0/raw/854b5ee94f6e3995d0cb6cc94f80dad1a69d1ab2/rebuild-satis.sh | TRAVIS_TOKEN=$(echo $TRAVIS_TOKEN) sh
