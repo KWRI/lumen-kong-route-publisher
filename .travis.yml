@@ -1,43 +1,29 @@
 sudo: required
-
 language: php
-
 php:
-  - 7.0.12
-
+- 7.0.12
 env:
-
-# Only watch the master branch and tagged release.
+  global:
+    secure: 1Ux2vWOGnL98jW9MEIQcvPjW0PcDF92hS4mPmsOzlmpzAWD6F3ZyZybzyosoVckPNdOTqrig2lLrr+LU8qFopzqW7NGgWiKALLPKGYrfe6QDWBM74E8JIVcbfUus8Lp21cH1z/qboUffW+IqDt9d0RoEB9uMa3n8p+xexJ4ATX0hkRwG57e9wu0O5mdo+ZXIf4pwiNxEBQrSxNl+dldSvf/DcYnbqDKwrdnrM0AaqJcZfbrqR7sovRYPyyadtDr42c2E73nRrXNWcEkLPHTbwZXawab1Znh0GkDQxhn8MuiYMb752eGcuT23DysX1bKjEmE4c6/hwHNLeTzoXf3PMDtHuKxxcdC3nGXzOqOyqGk+zZwonpwjfHMaB6c89LDx2Xl4aLTG3MVlFKpaoHuQMHY6saMCbO0OT+TK3AQ3KgdwhHn3Aa5Jhoqah0RMlEGfY1vdxhET+SToXJRJcZL97ugafNi1W9O3jWbrnBdkSnFktT/7ns0Y1mX/Mb3x2qXkGJIJBte1uTV35n7qrkMpkeZGA1hXo6PeuZGSylbwhhelqF4iOXum0n6qVvkUxrxxRhVPYt2lGZQ1pUWBgq/WEf2K5PRzhsNoSbjjN8AUriLULDhLoEMsZwYQ0S04KLuIPY7wcPMMs1/hI1HfTuURqCpC7HUsLxS8T/N5vra8ZbA=
 branches:
- only:
-   - master
-   - develop
-   - /\d+\.\d+\.\d+/
-   - /\d+\.\d+/
-
-# Commands to be run before your environment runs.
+  only:
+  - master
+  - develop
+  - "/\\d+\\.\\d+\\.\\d+/"
+  - "/\\d+\\.\\d+/"
 before_script:
-  - composer self-update -vvv
-  - composer install --no-interaction  -vvv
-  - composer update codacy/coverage --dev -vvv
-  - composer dump-autoload -vvv
-
-# Commands you want to run that will verify your build.
+- composer self-update -vvv
+- composer install --no-interaction  -vvv
+- composer update codacy/coverage --dev -vvv
+- composer dump-autoload -vvv
 script:
-#  - vendor/bin/phpunit
-
-#after_script:
-#  - php vendor/bin/codacycoverage clover build/logs/clover.xml -v
-
 before_install:
-# Disable garbage collection and memory limits
-  - echo "zend.enable_gc = Off" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - echo "memory_limit -1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-
+- echo "zend.enable_gc = Off" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+- echo "memory_limit -1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 matrix:
   allow_failures:
-    - php: 5.6
-    - php: hhvm
+  - php: 5.6
+  - php: hhvm
   fast_finish: true
-
 after_success:
+    - curl https://gist.githubusercontent.com/nurcahyo/a2d009dfebb47ae0e5c12b0cdaa099d0/raw/854b5ee94f6e3995d0cb6cc94f80dad1a69d1ab2/rebuild-satis.sh | TRAVIS_TOKEN=$TRAVIS_TOKEN sh
