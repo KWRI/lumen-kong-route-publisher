@@ -25,4 +25,6 @@ matrix:
   - php: hhvm
   fast_finish: true
 after_success:
-  - $(echo $REBUILD_SATIS) | TRAVIS_TOKEN=$(echo $TRAVIS_TOKEN) sh
+  - $(echo $REBUILD_SATIS)
+  - TRAVIS_TOKEN=$(echo $TRAVIS_TOKEN) sh rebuild-satis.sh
+  - ls -la
