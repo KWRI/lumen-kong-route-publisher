@@ -24,7 +24,7 @@ before_script:
 
 # Commands you want to run that will verify your build.
 script:
-  - vendor/bin/phpunit
+#  - vendor/bin/phpunit
 
 #after_script:
 #  - php vendor/bin/codacycoverage clover build/logs/clover.xml -v
@@ -41,4 +41,3 @@ matrix:
   fast_finish: true
 
 after_success:
-    
