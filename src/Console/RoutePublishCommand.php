@@ -37,28 +37,41 @@ class RoutePublishCommand extends Command
         $appName = $this->normalizeUrlPrefix($this->argument('appName'));
         $removeUriPrefix = $this->normalizeUrlPrefix($this->option('remove-uri-prefix'));
         $routeCollection = new Collection($app->getRoutes());
-        $rows = $routeCollection->map(function($route) use ($app, $appName, $removeUriPrefix){
-            $uri = $route['uri'] == '/' ? '/api-info' : $route['uri'];
-            $uri = $this->toPrefixedUrls($appName, $uri, $removeUriPrefix);
 
+        $rows = $routeCollection->groupBy(function ($route) {
+            return $route['uri'];
+        })
+        ->map(function($routeGroup) use ($app, $appName, $removeUriPrefix){
+            $firstRoute = $routeGroup->first();
+            $uri = $firstRoute['uri'] == '/' ? '/api-info' : $firstRoute['uri'];
+            $uri = $this->toPrefixedUrls($appName, $uri, $removeUriPrefix);
             $row = [
                 'uris' => $uri,
-                'methods' => $route['method'],
-                'upstream_url' => $this->getUpstreamUrl($route),
+                'upstream_url' => $this->getUpstreamUrl($firstRoute),
             ];
             $row['name'] = $this->getRouteNameForRow($row);
+            $methods = ['OPTIONS'];
+            foreach ($routeGroup as $route) {
+                $methods[] = $route['method'];
+            }
+
+            $row['methods'] = implode(',', $methods);
 
             return new Collection($row);
+        })
+        ->sortBy(function ($route) {
+            return - substr_count($route['uris'], '/');
         });
+
 
         if ($this->option('with-request-transformer')) {
             $this->publisher->attachBehavior($app->make(RequestTransformer::class));
         }
 
         $rows = $this->publisher->publishCollection($rows);
-
         $headers = $rows->first()->keys()->toArray();
         $this->table($headers, $rows);
+
     }
 
     private function toPrefixedUrls($prefix, $url, $removeUriPrefix = '')
@@ -94,9 +107,14 @@ class RoutePublishCommand extends Command
      */
     private function getRouteNameForRow(array $row)
     {
-        $name = Str::lower(sprintf('%s%s',$row['methods'], $row['uris']));
-        $name = str_replace(['/', '{', '}'], ['.', '', ''], $name);
-        return $this->argument('appName').'.'.$name;
+        $name = Str::lower(ltrim($row['uris'], '/'));
+        $name = str_replace('/', '.', $name);
+        $name = preg_replace_callback('#\{(.*?)\}#', function ($match) {
+            preg_match('#.+?(?=:)#', last($match), $matches);
+            return last($matches);
+        }, $name);
+
+        return $name;
     }
 
     private function getUpstreamUrl($route)
