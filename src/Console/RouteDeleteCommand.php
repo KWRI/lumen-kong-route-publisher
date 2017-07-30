@@ -44,7 +44,7 @@ class RouteDeleteCommand extends Command
         $apiCollection = $this->mergeWithNextApis($apis, $apiCollection);
 
         $matchApi = $apiCollection->filter(function ($api) {
-            return Str::startsWith($api['name'].'.', $this->argument('appName'));
+            return Str::startsWith($api['name'], $this->argument('appName'));
         })->map(function($api) {
             return [
                 'id' => $api['id'],
@@ -61,7 +61,7 @@ class RouteDeleteCommand extends Command
         if ($this->confirm('Do you want to delete all above routines from kong?')) {
             $matchApi->each(function ($api) {
                 $this->info('Deleting .. ' . $api['name']);
-                // $this->client->delete($api);
+                $this->client->delete($api);
             });
         }
 
