@@ -21,7 +21,7 @@ class KongClient
         public function updateOrAddApi(array $payload)
         {
             try {
-                $this->client->delete('/apis/'.$payload['name']);
+                $this->delete($payload);
             } catch (\Exception $e) {}
 
             return $this->client->put('/apis/', [
@@ -33,6 +33,18 @@ class KongClient
         {
             return $this->client->put("/apis/{$name}/plugins/", [
                 'json' => $payload
+            ]);
+        }
+
+        public function delete(array $payload)
+        {
+            return $this->client->delete('/apis/'.$payload['name']);
+        }
+
+        public function getApiList(array $payload = [])
+        {
+            return $this->client->get('/apis/', [
+                'query' => $payload
             ]);
         }
 }
