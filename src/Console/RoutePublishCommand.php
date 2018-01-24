@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use KWRI\Kong\RoutePublisher\KongPublisher;
 use KWRI\Kong\RoutePublisher\RequestTransformer;
+use KWRI\Kong\RoutePublisher\Oidc;
 
 class RoutePublishCommand extends Command
 {
