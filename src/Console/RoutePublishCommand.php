@@ -16,7 +16,7 @@ class RoutePublishCommand extends Command
      * @var string
      */
     protected $signature = 'kong:publish-route {appName} {--upstream-host=} '
-        . '{--remove-uri-prefix=} {--with-request-transformer}';
+        . '{--remove-uri-prefix=} {--with-request-transformer} {--with-oidc=}';
     /**
      * The console command description.
      *
@@ -64,8 +64,19 @@ class RoutePublishCommand extends Command
         });
 
 
+        // Plugin sections
+        // 1. Request transformer
         if ($this->option('with-request-transformer')) {
             $this->publisher->attachBehavior($app->make(RequestTransformer::class));
+        }
+
+        // 2. OIDC
+        if ($this->option('with-oidc')) {
+            list($clientId, $clientSecret,
+                $discovery, $introspectionEndpoint,
+                $authMethod) = explode(';', $this->option('with-oidc'));
+            $oidc = new Oidc($clientId, $clientSecret, $discovery, $introspectionEndpoint, $authMethod);
+            $this->publisher->attachBehavior($oidc);
         }
 
         $rows = $this->publisher->publishCollection($rows);
