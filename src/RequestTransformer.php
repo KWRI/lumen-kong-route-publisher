@@ -76,10 +76,6 @@ class RequestTransformer implements BehaviorInterface
 
     public function activatePlugin(KongClient $client, Collection $payload, $response = null)
     {
-        if (!Str::contains($payload->offsetGet('uris'), '(?<')) {
-            return;
-        }
-
         $client->updateOrAddPlugin($payload->offsetGet('name'), $this->createActivatePluginPayload($payload));
     }
 
