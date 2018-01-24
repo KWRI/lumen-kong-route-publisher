@@ -19,6 +19,7 @@ Arguments:
 - `--upstream-host` value is hostname where your microservice server life
 - `--remove-uri-prefix` is prefix to be removed
 - `--with-request-transformer` Run publisher with request transformer. If you have dynamic path as path parameter that need to call, You must use this argument (currently only support numerical value of path parameter).
+- `--with-oidc` Run publisher with OIDC. value is `;` separator of OIDC client id, client secret, discovery, introspection endpoint and the token auth method. 
 
 Env used:
 - `KONG_ADMIN_HOST` value is your kong admin host. for example:
@@ -32,7 +33,7 @@ convention in contacts is:
 
 later when publishing route you can call
 ```
-$ php artisan kong:publish-route contacts --upstream-host=http://mockbin.com/request --remove-uri-prefix=api/v1  --with-request-transformer
+$ php artisan kong:publish-route contacts --upstream-host=http://mockbin.com/request --remove-uri-prefix=api/v1  --with-request-transformer --with-oidc=someclientid;someclientsecret;https://onelogin.com/.well-known/discovery;https://onelogin.com/token/introspection;client_secret_basic
 ```
 
 it will make route in apigateway become:
