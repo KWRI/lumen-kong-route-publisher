@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use KWRI\Kong\RoutePublisher\KongPublisher;
 use KWRI\Kong\RoutePublisher\RequestTransformer;
 use KWRI\Kong\RoutePublisher\Oidc;
+use KWRI\Kong\RoutePublisher\Jwt;
 
 class RoutePublishCommand extends Command
 {
@@ -17,7 +18,7 @@ class RoutePublishCommand extends Command
      * @var string
      */
     protected $signature = 'kong:publish-route {appName} {--upstream-host=} '
-        . '{--remove-uri-prefix=} {--with-request-transformer} {--with-oidc=}';
+        . '{--remove-uri-prefix=} {--with-request-transformer} {--with-oidc=} {--with-jwt}';
     /**
      * The console command description.
      *
@@ -78,6 +79,11 @@ class RoutePublishCommand extends Command
                 $authMethod) = explode(';', $this->option('with-oidc'));
             $oidc = new Oidc($clientId, $clientSecret, $discovery, $introspectionEndpoint, $authMethod);
             $this->publisher->attachBehavior($oidc);
+        }
+
+        // 3. JWT
+        if ($this->option('with-jwt')) {
+            $this->publisher->attachBehavior($app->make(Jwt::class));
         }
 
         $rows = $this->publisher->publishCollection($rows);
