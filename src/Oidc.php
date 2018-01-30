@@ -4,7 +4,7 @@ namespace KWRI\Kong\RoutePublisher;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
-class Oidc implements BehaviorInterface
+class Oidc extends AuthPlugin implements BehaviorInterface
 {
     const PLUGIN_NAME = 'oidc';
 
@@ -52,7 +52,7 @@ class Oidc implements BehaviorInterface
         $client->updateOrAddPlugin($payload->offsetGet('name'), $this->createActivatePluginPayload($payload));
     }
 
-    public function createActivatePluginPayload(Collection $payload)
+    protected function setPluginPayload(Collection $payload)
     {
         $pluginPayload = [
             'name' => self::PLUGIN_NAME,
