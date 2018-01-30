@@ -3,6 +3,7 @@ namespace KWRI\Kong\RoutePublisher;
 
 use Illuminate\Support\ServiceProvider;
 use GuzzleHttp\Client as GuzzleClient;
+use KWRI\Kong\RoutePublisher\Console\RouteRefreshCommand;
 use KWRI\Kong\RoutePublisher\Console\RoutePublishCommand;
 use KWRI\Kong\RoutePublisher\Console\RouteDeleteCommand;
 
@@ -16,10 +17,12 @@ class KongPublisherServiceProvider extends ServiceProvider
             return new KongClient($client);
         });
 
+        $this->app->singleton('kong.route-refresh', RouteRefreshCommand::class);
         $this->app->singleton('kong.route-publisher', RoutePublishCommand::class);
         $this->app->singleton('kong.route-destroyer', RouteDeleteCommand::class);
 
         $this->commands(
+          'kong.route-refresh',
           'kong.route-publisher',
           'kong.route-destroyer'
         );
