@@ -4,9 +4,20 @@ namespace KWRI\Kong\RoutePublisher;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
-class Jwt implements BehaviorInterface
+class Jwt extends AuthPlugin implements BehaviorInterface
 {
     const PLUGIN_NAME = 'jwt';
+
+    /**
+     * @var string
+     */
+    private $anonymousId = 'undefined';
+
+
+    public function __construct($anonymousId)
+    {
+        $this->anonymousId = $anonymousId;
+    }
 
     public function transformPayload(Collection $payload)
     {
@@ -18,10 +29,11 @@ class Jwt implements BehaviorInterface
         $client->updateOrAddPlugin($payload->offsetGet('name'), $this->createActivatePluginPayload($payload));
     }
 
-    public function createActivatePluginPayload(Collection $payload)
+    protected function setPluginPayload(Collection $payload)
     {
         $pluginPayload = [
             'name' => self::PLUGIN_NAME,
+            'config.anonymous' => $this->anonymousId,
         ];
 
         return $pluginPayload;

@@ -18,7 +18,7 @@ class RoutePublishCommand extends Command
      * @var string
      */
     protected $signature = 'kong:publish-route {appName} {--upstream-host=} '
-        . '{--remove-uri-prefix=} {--with-request-transformer} {--with-oidc=} {--with-jwt}';
+        . '{--remove-uri-prefix=} {--with-request-transformer} {--with-oidc=} {--with-jwt=}';
     /**
      * The console command description.
      *
@@ -45,11 +45,17 @@ class RoutePublishCommand extends Command
         })
         ->map(function($routeGroup) use ($app, $appName, $removeUriPrefix){
             $firstRoute = $routeGroup->first();
+            $middlewares = [];
+            if (isset($firstRoute['action']['middleware'])) {
+                $middlewares = $firstRoute['action']['middleware'];
+            }
+
             $uri = $firstRoute['uri'] == '/' ? '/api-info' : $firstRoute['uri'];
             $uri = $this->toPrefixedUrls($appName, $uri, $removeUriPrefix);
             $row = [
                 'uris' => $uri,
                 'upstream_url' => $this->getUpstreamUrl($firstRoute),
+                'middlewares' => $middlewares,
             ];
             $row['name'] = $this->getRouteNameForRow($row);
             $methods = ['OPTIONS'];
@@ -83,7 +89,8 @@ class RoutePublishCommand extends Command
 
         // 3. JWT
         if ($this->option('with-jwt')) {
-            $this->publisher->attachBehavior($app->make(Jwt::class));
+            $jwt = new Jwt($this->option('with-jwt'));
+            $this->publisher->attachBehavior($jwt);
         }
 
         $rows = $this->publisher->publishCollection($rows);

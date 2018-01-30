@@ -24,6 +24,8 @@ class KongClient
                 $this->delete($payload);
             } catch (\Exception $e) {}
 
+            $payload = $this->filterPayload($payload);
+
             return $this->client->put('/apis/', [
                 'json' => $payload
             ]);
@@ -31,6 +33,11 @@ class KongClient
 
         public function updateOrAddPlugin($name, array $payload)
         {
+            // Nothing need to happen
+            if (empty($payload)) return;
+
+            $payload = $this->filterPayload($payload);
+
             return $this->client->put("/apis/{$name}/plugins/", [
                 'json' => $payload
             ]);
@@ -46,5 +53,15 @@ class KongClient
             return $this->client->get('/apis/', [
                 'query' => $payload
             ]);
+        }
+
+        protected function filterPayload(array $payload)
+        {
+            // Filter out middlewares
+            if (isset($payload['middlewares'])) {
+                unset($payload['middlewares']);
+            }
+
+            return $payload;
         }
 }
