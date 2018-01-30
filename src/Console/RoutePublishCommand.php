@@ -13,25 +13,25 @@ use KWRI\Kong\RoutePublisher\Jwt;
 class RoutePublishCommand extends Command
 {
     /**
-     * The console command name.
-     *
-     * @var string
-     */
+    * The console command name.
+    *
+    * @var string
+    */
     protected $signature = 'kong:publish-route {appName} {--upstream-host=} '
-        . '{--remove-uri-prefix=} {--with-request-transformer} {--with-oidc=} {--with-jwt=}';
+    . '{--remove-uri-prefix=} {--with-request-transformer} {--with-oidc=} {--with-jwt=}';
     /**
-     * The console command description.
-     *
-     * @var string
-     */
+    * The console command description.
+    *
+    * @var string
+    */
     protected $description = 'Publish all registered routes to Kong.';
 
 
     /**
-     * Execute the console command.
-     *
-     * @return void
-     */
+    * Execute the console command.
+    *
+    * @return void
+    */
     public function fire()
     {
         $app = $this->laravel;
@@ -55,7 +55,7 @@ class RoutePublishCommand extends Command
             $row = [
                 'uris' => $uri,
                 'upstream_url' => $this->getUpstreamUrl($firstRoute),
-                'middlewares' => $middlewares,
+                'middlewares' => implode(',',$middlewares),
             ];
             $row['name'] = $this->getRouteNameForRow($row);
             $methods = ['OPTIONS'];
@@ -81,8 +81,8 @@ class RoutePublishCommand extends Command
         // 2. OIDC
         if ($this->option('with-oidc')) {
             list($clientId, $clientSecret,
-                $discovery, $introspectionEndpoint,
-                $authMethod) = explode(';', $this->option('with-oidc'));
+            $discovery, $introspectionEndpoint,
+            $authMethod) = explode(';', $this->option('with-oidc'));
             $oidc = new Oidc($clientId, $clientSecret, $discovery, $introspectionEndpoint, $authMethod);
             $this->publisher->attachBehavior($oidc);
         }
@@ -127,9 +127,9 @@ class RoutePublishCommand extends Command
         return '/'.$appName;
     }
     /**
-     * @param array $action
-     * @return string
-     */
+    * @param array $action
+    * @return string
+    */
     private function getRouteNameForRow(array $row)
     {
         $name = Str::lower(ltrim($row['uris'], '/'));
@@ -144,7 +144,7 @@ class RoutePublishCommand extends Command
 
     private function getUpstreamUrl($route)
     {
-        return $this->option('upstream-host') . $route['uri'];
+        return rtrim($this->option('upstream-host'), '/') . $route['uri'];
     }
 
 }

@@ -58,7 +58,7 @@ class RouteDeleteCommand extends Command
         }
         $headers = array_keys($matchApi->first());
         $this->table($headers, $matchApi);
-        if ($this->confirm('Do you want to delete all above routines from kong?')) {
+        if ($this->option('no-interaction') || $this->confirm('Do you want to delete all above routines from kong?')) {
             $matchApi->each(function ($api) {
                 $this->info('Deleting .. ' . $api['name']);
                 $this->client->delete($api);

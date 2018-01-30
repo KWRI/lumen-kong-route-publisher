@@ -8,9 +8,9 @@ abstract class AuthPlugin
 {
     public function createActivatePluginPayload(Collection $payload)
     {
-        if ($payload->has('middlewares') && in_array('auth', $payload->get('middlewares'))) {
+        if ($payload->has('middlewares') && strpos($payload->get('middlewares'), 'auth') !== false) {
             // Only enabled auth plugin for those that really need them
-            $this->setPluginPayload($payload);
+            return $this->setPluginPayload($payload);
         } else {
             return [];
         }

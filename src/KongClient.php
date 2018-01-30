@@ -34,7 +34,7 @@ class KongClient
         public function updateOrAddPlugin($name, array $payload)
         {
             // Nothing need to happen
-            if (empty($payload)) return;
+            if (empty($payload)) return 'Skipped';
 
             $payload = $this->filterPayload($payload);
 

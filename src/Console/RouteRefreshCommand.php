@@ -36,7 +36,7 @@ class RouteRefreshCommand extends Command
 
             $this->call('kong:delete-route', [
                 'appName' => $appName,
-                '--force' => true
+                '--no-interaction' => true
             ]);
             $this->call('kong:publish-route', [
                 'appName' => $appName,
@@ -45,7 +45,7 @@ class RouteRefreshCommand extends Command
                 '--with-request-transformer' => true,
                 '--with-jwt' => env('KONG_PUBLISHER_JWT'),
                 '--with-oidc' => env('KONG_PUBLISHER_OIDC'),
-                '--force' => true
+                '--no-interaction' => true
             ]);
         }
     }
