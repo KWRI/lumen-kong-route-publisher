@@ -9,6 +9,7 @@ use KWRI\Kong\RoutePublisher\KongPublisher;
 use KWRI\Kong\RoutePublisher\RequestTransformer;
 use KWRI\Kong\RoutePublisher\Oidc;
 use KWRI\Kong\RoutePublisher\Jwt;
+use KWRI\Kong\RoutePublisher\JwtClaimHeaders;
 
 class RoutePublishCommand extends Command
 {
@@ -91,6 +92,7 @@ class RoutePublishCommand extends Command
         if ($this->option('with-jwt')) {
             $jwt = new Jwt($this->option('with-jwt'));
             $this->publisher->attachBehavior($jwt);
+            $this->publisher->attachBehavior($app->make(JwtClaimHeaders::class));
         }
 
         $rows = $this->publisher->publishCollection($rows);
