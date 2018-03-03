@@ -6,9 +6,9 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**
- * Build row of kong route payload based on lumen route.
+ * Build route array for kong based on lumen route.
  */
-class RowBuilder
+class RouteBuilder
 {
     public function build(array $options = [])
     {
@@ -31,20 +31,20 @@ class RowBuilder
 
                 $uri = $firstRoute['uri'] == '/' ? '/api-info' : $firstRoute['uri'];
                 $uri = $this->toPrefixedUrls($appName, $uri, $removeUriPrefix);
-                $row = [
+                $route = [
                     'uris' => $uri,
                     'upstream_url' => $this->getUpstreamUrl($firstRoute, $upstreamHost),
                     'middlewares' => implode(',',$middlewares),
                 ];
-                $row['name'] = $this->getRouteNameForRow($row);
+                $route['name'] = $this->getRouteNameForRow($route);
                 $methods = ['OPTIONS'];
                 foreach ($routeGroup as $route) {
                     $methods[] = $route['method'];
                 }
 
-                $row['methods'] = implode(',', $methods);
+                $route['methods'] = implode(',', $methods);
 
-                return new Collection($row);
+                return new Collection($route);
             })
             ->sortBy(function ($route) {
                 return - substr_count($route['uris'], '/');

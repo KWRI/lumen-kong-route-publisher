@@ -17,23 +17,28 @@ class KongPublisher
         $this->behaviors[] = $behavior;
     }
 
-    public function publishCollection(Collection $payloads)
+    public function publishCollection(Collection $routes)
     {
 
-        $results = $payloads->map(function ($payload) {
+        $results = $routes->map(function ($route) {
             try {
-                $this->beforePublish($payload);
-                $data = $payload->toArray();
+                $this->beforePublish($route);
+                $data = $route->toArray();
                 $response = $this->client->updateOrAddApi($data);
-                $this->afterPublish($response, $payload);
-                return $payload;
+                $this->afterPublish($response, $route);
+                return $route;
             } catch (\Exception $e) {
-                $payload->offsetSet('error', $e->getMessage());
-                return $payload;
+                $route->offsetSet('error', $e->getMessage());
+                return $route;
             }
          });
 
         return $results;
+    }
+
+    public function transformToPayload(Collection $routes)
+    {
+
     }
 
     public function beforePublish($payload)

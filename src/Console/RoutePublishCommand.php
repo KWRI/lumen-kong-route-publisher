@@ -10,7 +10,7 @@ use KWRI\Kong\RoutePublisher\RequestTransformer;
 use KWRI\Kong\RoutePublisher\Oidc;
 use KWRI\Kong\RoutePublisher\Jwt;
 use KWRI\Kong\RoutePublisher\JwtClaimHeaders;
-use KWRI\Kong\RoutePublisher\RowBuilder;
+use KWRI\Kong\RoutePublisher\RouteBuilder;
 use KWRI\Kong\RoutePublisher\PublisherBuilder;
 
 class RoutePublishCommand extends Command
@@ -38,12 +38,12 @@ class RoutePublishCommand extends Command
     public function fire()
     {
         // Route 
-        $rowOptions = [
+        $routeOptions = [
             'app-name' => $this->argument('appName'),
             'remove-uri-prefix' => $this->option('remove-uri-prefix'),
             'upstream-host' => $this->option('upstream-host'),
         ];
-        $rows = app()->make(RowBuilder::class)->build($rowOptions);
+        $routes = app()->make(RouteBuilder::class)->build($routeOptions);
 
         // Plugin
         $publisherPlugins = [
@@ -54,9 +54,9 @@ class RoutePublishCommand extends Command
         $this->publisher = app(PublisherBuilder::class)->build($publisherPlugins);
 
         // Publish it
-        $rows = $this->publisher->publishCollection($rows);
-        $headers = $rows->first()->keys()->toArray();
-        $this->table($headers, $rows);
+        $routes = $this->publisher->publishCollection($routes);
+        $headers = $routes->first()->keys()->toArray();
+        $this->table($headers, $routes);
 
     }
 }
