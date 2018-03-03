@@ -3,6 +3,7 @@
 namespace KWRI\Kong\RoutePublisher;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use KWRI\Kong\RoutePublisher\KongClient;
 
 abstract class AuthPlugin
 {
@@ -14,6 +15,11 @@ abstract class AuthPlugin
         } else {
             return [];
         }
+    }
+
+    public function getActivatePluginPayload(KongClient $client, Collection $payload)
+    {
+        $client->getUpdateOrAddPluginParams($payload->offsetGet('name'), $this->createActivatePluginPayload($payload));
     }
 
     abstract protected function setPluginPayload(Collection $payload);

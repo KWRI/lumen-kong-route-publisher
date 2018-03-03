@@ -17,28 +17,33 @@ class KongPublisher
         $this->behaviors[] = $behavior;
     }
 
-    public function publishCollection(Collection $routes)
+    public function publishCollection(Collection $routePayloads)
     {
-
-        $results = $routes->map(function ($route) {
+        $results = $routePayloads->map(function ($payload) {
             try {
-                $this->beforePublish($route);
-                $data = $route->toArray();
+                $this->beforePublish($payload);
+                $data = $payload->toArray();
                 $response = $this->client->updateOrAddApi($data);
-                $this->afterPublish($response, $route);
-                return $route;
+                $this->afterPublish($response, $payload);
+                return $payload;
             } catch (\Exception $e) {
-                $route->offsetSet('error', $e->getMessage());
-                return $route;
+                $payload->offsetSet('error', $e->getMessage());
+                return $payload;
             }
          });
 
         return $results;
     }
 
-    public function transformToPayload(Collection $routes)
+    public function transformToPayload(Collection $routePayloads)
     {
-
+        return $routePayloads->map(function ($payload) {
+            $this->beforePublish($payload);
+            return [
+                'route' => $payload->toArray(),
+                'plugins' => $this->getPluginsPayload($payload)
+            ];
+        });
     }
 
     public function beforePublish($payload)
@@ -46,7 +51,6 @@ class KongPublisher
         foreach ($this->behaviors as $behavior) {
             $behavior->transformPayload($payload);
         }
-
     }
 
     public function afterPublish($response, $payload)
@@ -62,5 +66,12 @@ class KongPublisher
         foreach ($this->behaviors as $behavior) {
             $behavior->activatePlugin($this->client, $payload, $response);
         }
+    }
+
+    public function getPluginsPayload($payload)
+    {
+        return collect($this->behaviors)->map(function($behavior) use ($payload) {
+            return $behavior->getActivatePluginPayload($this->client, $payload);
+        })->toArray();
     }
 }

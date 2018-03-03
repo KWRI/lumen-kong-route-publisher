@@ -44,3 +44,20 @@ it will make route in apigateway become:
 And when access that it will be forwarded to:
 - mockbin.com/request/api/v1/contacts
 - mockbin.com/request/api/v1/contacts/emails
+
+## Viewing Kong Payload for Add / Delete Endpoint
+
+To use this feature please provide those env values
+
+- `KONG_APP_NAME` : example 'mailchimp'
+- `KONG_ADMIN_HOST` : example 'http://kong-dev:8001'
+- `KONG_UPSTREAM_HOST` : example 'http://mailchimp-microservice.dev'
+- `KONG_REMOVE_URI_PREFIX` : example 'api/v1'
+
+Available endpoint:
+
+- `/kong/delete-routes`: Display kong payload for deleting route
+   Available parameter: - 
+
+- `/kong/publish-routes`: Display kong payload for adding endpoint along with activating plugin.
+  Available request parameter: `with-request-transformer`, `with-oidc`, `with-jwt` 

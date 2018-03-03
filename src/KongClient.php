@@ -46,6 +46,20 @@ class KongClient
             ]);
         }
 
+        public function getUpdateOrAddPluginParams($name, array $payload)
+        {
+            // Nothing need to happen
+            if (empty($payload)) return 'Skipped';
+
+            $payload = $this->filterPayload($payload);
+
+            return [
+                'method' => 'put',
+                'uri' => "/apis/{$name}/plugins/",
+                'payload' => $payload
+            ];
+        }
+
         public function delete(array $payload)
         {
             return $this->client->delete('/apis/'.$payload['name']);

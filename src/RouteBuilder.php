@@ -38,8 +38,8 @@ class RouteBuilder
                 ];
                 $route['name'] = $this->getRouteNameForRow($route);
                 $methods = ['OPTIONS'];
-                foreach ($routeGroup as $route) {
-                    $methods[] = $route['method'];
+                foreach ($routeGroup as $rg) {
+                    $methods[] = $rg['method'];
                 }
 
                 $route['methods'] = implode(',', $methods);
