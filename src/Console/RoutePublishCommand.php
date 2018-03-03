@@ -10,6 +10,8 @@ use KWRI\Kong\RoutePublisher\RequestTransformer;
 use KWRI\Kong\RoutePublisher\Oidc;
 use KWRI\Kong\RoutePublisher\Jwt;
 use KWRI\Kong\RoutePublisher\JwtClaimHeaders;
+use KWRI\Kong\RoutePublisher\RowBuilder;
+use KWRI\Kong\RoutePublisher\PublisherBuilder;
 
 class RoutePublishCommand extends Command
 {
@@ -35,118 +37,26 @@ class RoutePublishCommand extends Command
     */
     public function fire()
     {
-        $app = $this->laravel;
-        $this->publisher = $app->make(KongPublisher::class);
-        $appName = $this->normalizeUrlPrefix($this->argument('appName'));
-        $removeUriPrefix = $this->normalizeUrlPrefix($this->option('remove-uri-prefix'));
-        $routeCollection = new Collection($app->getRoutes());
+        // Route 
+        $rowOptions = [
+            'app-name' => $this->argument('appName'),
+            'remove-uri-prefix' => $this->option('remove-uri-prefix'),
+            'upstream-host' => $this->option('upstream-host'),
+        ];
+        $rows = app()->make(RowBuilder::class)->build($rowOptions);
 
-        $rows = $routeCollection->groupBy(function ($route) {
-            return $route['uri'];
-        })
-        ->map(function($routeGroup) use ($app, $appName, $removeUriPrefix){
-            $firstRoute = $routeGroup->first();
-            $middlewares = [];
-            if (isset($firstRoute['action']['middleware'])) {
-                $middlewares = $firstRoute['action']['middleware'];
-            }
+        // Plugin
+        $publisherPlugins = [
+            'with-request-transformer' => $this->option('with-request-transformer'),
+            'with-oidc' => $this->option('with-oidc'),
+            'with-jwt' => $this->option('with-jwt'),
+        ];
+        $this->publisher = app(PublisherBuilder::class)->build($publisherPlugins);
 
-            $uri = $firstRoute['uri'] == '/' ? '/api-info' : $firstRoute['uri'];
-            $uri = $this->toPrefixedUrls($appName, $uri, $removeUriPrefix);
-            $row = [
-                'uris' => $uri,
-                'upstream_url' => $this->getUpstreamUrl($firstRoute),
-                'middlewares' => implode(',',$middlewares),
-            ];
-            $row['name'] = $this->getRouteNameForRow($row);
-            $methods = ['OPTIONS'];
-            foreach ($routeGroup as $route) {
-                $methods[] = $route['method'];
-            }
-
-            $row['methods'] = implode(',', $methods);
-
-            return new Collection($row);
-        })
-        ->sortBy(function ($route) {
-            return - substr_count($route['uris'], '/');
-        });
-
-
-        // Plugin sections
-        // 1. Request transformer
-        if ($this->option('with-request-transformer')) {
-            $this->publisher->attachBehavior($app->make(RequestTransformer::class));
-        }
-
-        // 2. OIDC
-        if ($this->option('with-oidc')) {
-            list($clientId, $clientSecret,
-            $discovery, $introspectionEndpoint,
-            $authMethod) = explode(';', $this->option('with-oidc'));
-            $oidc = new Oidc($clientId, $clientSecret, $discovery, $introspectionEndpoint, $authMethod);
-            $this->publisher->attachBehavior($oidc);
-        }
-
-        // 3. JWT
-        if ($this->option('with-jwt')) {
-            $jwt = new Jwt($this->option('with-jwt'));
-            $this->publisher->attachBehavior($jwt);
-            $this->publisher->attachBehavior($app->make(JwtClaimHeaders::class));
-        }
-
+        // Publish it
         $rows = $this->publisher->publishCollection($rows);
         $headers = $rows->first()->keys()->toArray();
         $this->table($headers, $rows);
 
     }
-
-    private function toPrefixedUrls($prefix, $url, $removeUriPrefix = '')
-    {
-        $url = $this->removeUriPrefix($url, $removeUriPrefix);
-        if (Str::startsWith($url, $prefix)) {
-            return $url;
-        }
-        return $prefix . $url;
-    }
-
-    private function removeUriPrefix($url, $removeUriPrefix)
-    {
-
-        if (Str::startsWith($url, $removeUriPrefix)) {
-            $url = Str::replaceFirst($removeUriPrefix, '', $url);
-        }
-
-        return $url;
-    }
-
-    private function normalizeUrlPrefix($appName)
-    {
-        if ($appName{0} == '/') {
-            return $appName;
-        }
-
-        return '/'.$appName;
-    }
-    /**
-    * @param array $action
-    * @return string
-    */
-    private function getRouteNameForRow(array $row)
-    {
-        $name = Str::lower(ltrim($row['uris'], '/'));
-        $name = str_replace('/', '.', $name);
-        $name = preg_replace_callback('#\{(.*?)\}#', function ($match) {
-            preg_match('#.+?(?=:)#', last($match), $matches);
-            return last($matches);
-        }, $name);
-
-        return $name;
-    }
-
-    private function getUpstreamUrl($route)
-    {
-        return rtrim($this->option('upstream-host'), '/') . $route['uri'];
-    }
-
 }
