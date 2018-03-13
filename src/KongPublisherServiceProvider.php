@@ -12,27 +12,32 @@ use Illuminate\Http\Request;
 
 class KongPublisherServiceProvider extends ServiceProvider
 {
+    const KONG_ADMIN_HOST = 'KONG_ADMIN_HOST';
+    const KONG_PUBLISHER_UPSTREAM_HOST = 'KONG_PUBLISHER_UPSTREAM_HOST';
+    const KONG_PUBLISHER_REMOVED_URI_PREFIX = 'KONG_PUBLISHER_REMOVED_URI_PREFIX';
+
     public function boot()
     {
+        $appName = file_get_contents(app()->basePath().'/.kong-app-name');
+
         // endpoints for generating kong payload
-        app()->get('kong/delete-routes', function() {
-            $appName = getenv('KONG_APP_NAME');
+        app()->get('kong/delete-routes', function() use($appName) {
             $client = app()->make(KongClient::class);
             return response()->json([
                 'meta' => [
-                    'app_name' => getenv('KONG_APP_NAME'),
-                    'admin_host' => getenv('KONG_ADMIN_HOST'),
+                    'app_name' => $appName,
+                    'admin_host' => getenv(self::KONG_ADMIN_HOST),
                 ],
                 'data' => $client->getApiByName($appName)
             ]);
         });
 
-        $this->app->get('kong/publish-routes', function(Request $request) {
-            // Route 
+        $this->app->get('kong/publish-routes', function(Request $request) use($appName) {
+            // Route
             $routeOptions = [
-                'app-name' => getenv('KONG_APP_NAME'),
-                'remove-uri-prefix' => getenv('KONG_REMOVE_URI_PREFIX'),
-                'upstream-host' => getenv('KONG_UPSTREAM_HOST'),
+                'app-name' => $appName,
+                'remove-uri-prefix' => getenv(self::KONG_PUBLISHER_REMOVED_URI_PREFIX),
+                'upstream-host' => getenv(self::KONG_PUBLISHER_UPSTREAM_HOST),
             ];
             $routes = app()->make(RouteBuilder::class)->build($routeOptions);
 
@@ -51,9 +56,8 @@ class KongPublisherServiceProvider extends ServiceProvider
 
     public function register()
     {
-
         $this->app->bind(KongClient::class, function() {
-            $hosts = getenv('KONG_ADMIN_HOST');
+            $hosts = getenv(self::KONG_ADMIN_HOST);
             $client = new GuzzleClient(['base_uri' => $hosts]);
             return new KongClient($client);
         });
