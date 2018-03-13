@@ -30,7 +30,7 @@ class PublisherBuilder
 
         // 3. JWT
         if ($plugins['with-jwt'] ?? null) {
-            $jwt = new Jwt($plugins('with-jwt'));
+            $jwt = new Jwt($plugins['with-jwt']);
             $this->publisher->attachBehavior($jwt);
             $this->publisher->attachBehavior(app()->make(JwtClaimHeaders::class));
         }

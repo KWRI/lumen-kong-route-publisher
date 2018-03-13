@@ -81,7 +81,7 @@ class RouteBuilder
 
     private function getUpstreamUrl($route, $upstreamHost = null)
     {
-        return rtrim($upstreamHost, '/') . $route['uri'];
+        return trim(rtrim($upstreamHost, '/'),'/') . $route['uri'];
     }
 
     /**

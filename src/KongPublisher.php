@@ -71,7 +71,7 @@ class KongPublisher
     public function getPluginsPayload($payload)
     {
         return collect($this->behaviors)->map(function($behavior) use ($payload) {
-            return $behavior->getActivatePluginPayload($this->client, $payload);
+            return $behavior->createActivatePluginPayload($payload);
         })->toArray();
     }
 }
