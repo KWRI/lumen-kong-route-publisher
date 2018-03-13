@@ -96,4 +96,9 @@ class RequestTransformer implements BehaviorInterface
         return $pluginPayload;
     }
 
+    public function getActivatePluginPayload(KongClient $client, Collection $payload)
+    {
+        $client->getUpdateOrAddPluginParams($payload->offsetGet('name'), $this->createActivatePluginPayload($payload));
+    }
+
 }
