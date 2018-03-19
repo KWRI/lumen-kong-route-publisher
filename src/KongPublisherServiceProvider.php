@@ -9,6 +9,7 @@ use KWRI\Kong\RoutePublisher\Console\RouteDeleteCommand;
 use KWRI\Kong\RoutePublisher\KongClient;
 use KWRI\Kong\RoutePublisher\RouteBuilder;
 use Illuminate\Http\Request;
+use Exception;
 
 class KongPublisherServiceProvider extends ServiceProvider
 {
@@ -23,12 +24,19 @@ class KongPublisherServiceProvider extends ServiceProvider
         // endpoints for generating kong payload
         app()->get('kong/delete-routes', function() use($appName) {
             $client = app()->make(KongClient::class);
+            $data = [];
+            try {
+                $data = $client->getApiByName($appName);
+            } catch (Exception $e) {
+                $data = [];
+            }
+
             return response()->json([
                 'meta' => [
                     'app_name' => $appName,
                     'admin_host' => getenv(self::KONG_ADMIN_HOST),
                 ],
-                'data' => $client->getApiByName($appName)
+                'data' => $data
             ]);
         });
 
