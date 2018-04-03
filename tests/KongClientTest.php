@@ -1,6 +1,7 @@
 <?php
+use PHPUnit\Framework\TestCase;
 
-class KongClientTest extends PHPUnit_Framework_TestCase
+class KongClientTest extends TestCase
 {
 
     public function testExample() {
