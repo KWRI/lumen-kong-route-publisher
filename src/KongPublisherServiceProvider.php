@@ -1,15 +1,16 @@
 <?php
 namespace KWRI\Kong\RoutePublisher;
 
-use Illuminate\Support\ServiceProvider;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use GuzzleHttp\Client as GuzzleClient;
-use KWRI\Kong\RoutePublisher\Console\RouteRefreshCommand;
-use KWRI\Kong\RoutePublisher\Console\RoutePublishCommand;
-use KWRI\Kong\RoutePublisher\Console\RouteDeleteCommand;
+use Illuminate\Support\ServiceProvider;
 use KWRI\Kong\RoutePublisher\KongClient;
 use KWRI\Kong\RoutePublisher\RouteBuilder;
-use Illuminate\Http\Request;
-use Exception;
+use KWRI\Kong\RoutePublisher\Console\RouteDeleteCommand;
+use KWRI\Kong\RoutePublisher\Console\RoutePublishCommand;
+use KWRI\Kong\RoutePublisher\Console\RouteRefreshCommand;
 
 class KongPublisherServiceProvider extends ServiceProvider
 {
@@ -22,7 +23,7 @@ class KongPublisherServiceProvider extends ServiceProvider
         $appName = file_get_contents(app()->basePath().'/.kong-app-name');
 
         // endpoints for generating kong payload
-        app()->get('kong/delete-routes', function() use($appName) {
+        Route::get('kong/delete-routes', function() use($appName) {
             $client = app()->make(KongClient::class);
             $data = [];
             try {
@@ -40,7 +41,7 @@ class KongPublisherServiceProvider extends ServiceProvider
             ]);
         });
 
-        $this->app->get('kong/publish-routes', function(Request $request) use($appName) {
+        Route::get('kong/publish-routes', function(Request $request) use($appName) {
             // Route
             $routeOptions = [
                 'app-name' => $appName,
