@@ -1,15 +1,15 @@
 <?php
 namespace KWRI\Kong\RoutePublisher;
 
-use Illuminate\Support\ServiceProvider;
+use Exception;
+use Illuminate\Http\Request;
 use GuzzleHttp\Client as GuzzleClient;
-use KWRI\Kong\RoutePublisher\Console\RouteRefreshCommand;
-use KWRI\Kong\RoutePublisher\Console\RoutePublishCommand;
-use KWRI\Kong\RoutePublisher\Console\RouteDeleteCommand;
+use Illuminate\Support\ServiceProvider;
 use KWRI\Kong\RoutePublisher\KongClient;
 use KWRI\Kong\RoutePublisher\RouteBuilder;
-use Illuminate\Http\Request;
-use Exception;
+use KWRI\Kong\RoutePublisher\Console\RouteDeleteCommand;
+use KWRI\Kong\RoutePublisher\Console\RoutePublishCommand;
+use KWRI\Kong\RoutePublisher\Console\RouteRefreshCommand;
 
 class KongPublisherServiceProvider extends ServiceProvider
 {
@@ -22,7 +22,7 @@ class KongPublisherServiceProvider extends ServiceProvider
         $appName = file_get_contents(app()->basePath().'/.kong-app-name');
 
         // endpoints for generating kong payload
-        app()->get('kong/delete-routes', function() use($appName) {
+        $this->app->router->get('kong/delete-routes', function () use ($appName) {
             $client = app()->make(KongClient::class);
             $data = [];
             try {
@@ -40,7 +40,7 @@ class KongPublisherServiceProvider extends ServiceProvider
             ]);
         });
 
-        $this->app->get('kong/publish-routes', function(Request $request) use($appName) {
+        $this->app->router->get('kong/publish-routes', function (Request $request) use ($appName) {
             // Route
             $routeOptions = [
                 'app-name' => $appName,
@@ -64,7 +64,7 @@ class KongPublisherServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->app->bind(KongClient::class, function() {
+        $this->app->bind(KongClient::class, function () {
             $hosts = getenv(self::KONG_ADMIN_HOST);
             $client = new GuzzleClient(['base_uri' => $hosts]);
             return new KongClient($client);
@@ -80,5 +80,4 @@ class KongPublisherServiceProvider extends ServiceProvider
           'kong.route-destroyer'
         );
     }
-
 }
