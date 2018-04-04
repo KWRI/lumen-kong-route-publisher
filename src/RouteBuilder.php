@@ -16,7 +16,7 @@ class RouteBuilder
         $appName = $this->normalizeUrlPrefix($options['appName'] ?? null);
         $removeUriPrefix = $this->normalizeUrlPrefix($options['remove-uri-prefix'] ?? null);
         $upstreamHost = $this->normalizeUrlPrefix($options['upstream-host'] ?? null);
-        $routeCollection = new Collection($app->getRoutes());
+        $routeCollection = new Collection($app->router->getRoutes());
 
         return $routeCollection
             ->groupBy(function ($route) {

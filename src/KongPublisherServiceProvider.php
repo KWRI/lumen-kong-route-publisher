@@ -23,7 +23,7 @@ class KongPublisherServiceProvider extends ServiceProvider
         $appName = file_get_contents(app()->basePath().'/.kong-app-name');
 
         // endpoints for generating kong payload
-        Route::get('kong/delete-routes', function() use($appName) {
+        $this->app->router->get('kong/delete-routes', function() use($appName) {
             $client = app()->make(KongClient::class);
             $data = [];
             try {
@@ -41,7 +41,7 @@ class KongPublisherServiceProvider extends ServiceProvider
             ]);
         });
 
-        Route::get('kong/publish-routes', function(Request $request) use($appName) {
+        $this->app->router->get('kong/publish-routes', function(Request $request) use($appName) {
             // Route
             $routeOptions = [
                 'app-name' => $appName,
