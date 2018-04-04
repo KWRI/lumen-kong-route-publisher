@@ -3,7 +3,7 @@ namespace KWRI\Kong\RoutePublisher;
 
 use Exception;
 use Illuminate\Http\Request;
-tUse GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Support\ServiceProvider;
 use KWRI\Kong\RoutePublisher\KongClient;
 use KWRI\Kong\RoutePublisher\RouteBuilder;
