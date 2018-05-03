@@ -1,3 +1,6 @@
+# [DEPRECATED PACKAGE]
+Do not use this package. You can define your kong routes in a declarative fashion and publish it via [Kong Publisher](https://dev-kong-publisher.command-api.kw.com) instead.
+
 # Kong Publisher for Lumen Application
 
 ## Installation:
